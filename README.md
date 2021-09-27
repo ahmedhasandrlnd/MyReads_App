@@ -2,6 +2,8 @@
 
 I created this website as a project for my React Nanodegree from Udacity. This website allows the user to select and categorize books he/she has read, is currently reading, or want to read. 
 
+![myReads_App](myReads_App.gif)
+
 ## Prerequisite
 
 * Git
