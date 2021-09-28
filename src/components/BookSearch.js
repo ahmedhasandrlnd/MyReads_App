@@ -5,25 +5,38 @@ import {Link} from "react-router-dom";
 import * as BooksAPI from './BooksAPI'
 import Book from "./Book";
 
+
 class BookSearch extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            searchBooksList: []
+            searchBooksList: [],
+            searchError: false
         }
 
     }
 
-    MAX_RESULTS_PER_PAGE = 20;
-
+    
+ 
     componentWillUnmount() {
         this.searchBooks("");
     }
 
     searchBooks = (searchQuery) => {
-        if (searchQuery) {
-            BooksAPI.search(searchQuery, this.MAX_RESULTS_PER_PAGE).then((searchableBooks) => {
+        const terms=['Android', 'Art', 'Artificial Intelligence', 'Astronomy', 'Austen', 'Baseball', 'Basketball', 'Bhagat', 'Biography', 'Brief', 'Business', 'Camus', 'Cervantes', 'Christie', 'Classics', 'Comics', 'Cook', 'Cricket', 'Cycling', 'Desai', 'Design', 'Development', 'Digital Marketing', 'Drama', 'Drawing', 'Dumas', 'Education', 'Everything', 'Fantasy', 'Film', 'Finance', 'First', 'Fitness', 'Football', 'Future', 'Games', 'Gandhi', 'History', 'History', 'Homer', 'Horror', 'Hugo', 'Ibsen', 'Journey', 'Kafka', 'King', 'Lahiri', 'Larsson', 'Learn', 'Literary Fiction', 'Make', 'Manage', 'Marquez', 'Money', 'Mystery', 'Negotiate', 'Painting', 'Philosophy', 'Photography', 'Poetry', 'Production', 'Program Javascript', 'Programming', 'React', 'Redux', 'River', 'Robotics', 'Rowling', 'Satire', 'Science Fiction', 'Shakespeare', 'Singh', 'Swimming', 'Tale', 'Thrun', 'Time', 'Tolstoy', 'Travel', 'Ultimate', 'Virtual Reality', 'Web Development', 'iOS'];
+        
+        
+        if (!searchQuery||(searchQuery==='')||!(terms.includes(searchQuery))) 
+        {
+            this.setState({
+                searchBooksList: []
+            });
+
+        }        
+        else 
+        {
+            BooksAPI.search(searchQuery.trim()).then((searchableBooks) => {
                 if (searchableBooks.length) {
                     searchableBooks.forEach((book, index) => {
                         let bookToBeMatched = this.props.books.find((currentBook) => currentBook.id === book.id);
@@ -35,16 +48,21 @@ class BookSearch extends Component {
                         searchableBooks[index] = book;
                     });
                     this.setState({
-                        searchBooksList: searchableBooks
-                    });
+                        searchBooksList: searchableBooks,
+                        searchError: false
+                    })
                 }
-            });
-        } else {
-            this.setState({
-                searchBooksList: []
-            });
+            })
+            .catch(error => {
+                this.setState({
+                  searchBooksList: [],
+                  searchError: true
+                })
+                console.log(this.state.searchError)
+              })
 
-        }
+        } 
+
     };
 
     render() {
@@ -62,6 +80,11 @@ class BookSearch extends Component {
                 </div>
                 <div className="search-books-results">
                     <ol className="books-grid">
+                    {this.state.searchError === true && (
+                        <div className="search-error">
+                        Your search did not match any books
+                        </div>
+                      )}
                         {this.state.searchBooksList.map((book) => (
                             <li key={book.id} className="contact-list-item">
                                 <Book
